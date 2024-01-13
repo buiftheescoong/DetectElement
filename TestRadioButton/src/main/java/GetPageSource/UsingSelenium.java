@@ -14,13 +14,12 @@ public class UsingSelenium {
     public static String getHtmlContent(String linkHtml) {
 //    System.setProperty("Webdriver.chrome.driver", "C:\\webdriver\\chromedriver.exe");
         WebDriver driver = new ChromeDriver();
+        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         driver.get(linkHtml);
-//        driver.manage().timeouts().implicitlyWait(100, TimeUnit.SECONDS);
-//
-//        String htmlContent = driver.getPageSource();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(100));
-        System.out.println(wait.until(ExpectedConditions.jsReturnsValue("return document.readyState;")).toString());
         String htmlContent = driver.getPageSource();
+//        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(100));
+//        System.out.println(wait.until(ExpectedConditions.jsReturnsValue("return document.readyState;")).toString());
+//        String htmlContent = driver.getPageSource();
         driver.quit();
         return htmlContent;
     }
