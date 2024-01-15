@@ -1,7 +1,7 @@
 package Test;
 
 import Elements.Checkbox;
-import Elements.Checkbox.Pair;
+import Elements.Pair;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +10,7 @@ public class TestDetectCheckboxElement {
   public static void main(String[] args) {
     Checkbox checkbox = new Checkbox();
     Map<String, List<String>> mapTextAndChoices = new HashMap<>();
-    mapTextAndChoices.put("Check the conditions that apply to you or any member of your immediate relatives:", List.of(new String[]{"Asthma", "Cancer"}));
+    mapTextAndChoices.put("check the conditions that apply to you or any member of your immediate relatives  ", List.of(new String[]{"Asthma", "Cancer"}));
     mapTextAndChoices.put("Check the symptoms that you' re currently experiencing:", List.of(new String[]{"Weight gain", "Chest pain"}));
 //    mapTextAndChoices.put("Hobbies", List.of(new String[]{"Reading"}));
 //    mapTextAndChoices.put("Favorite", List.of(new String[]{"Sports"}));

@@ -14,16 +14,17 @@ import org.jsoup.select.Elements;
 
 public class SelectDropDownList extends ProcessDetectElement {
 
-  Map<String, List<String>> mapStoreTextAndChoices = new HashMap<>();
+  Map<String, List<String>> mapStoreNormalizeTextAndChoices = new HashMap<>();
   Vector<Element> selectElements = new Vector<>();
   Map<Pair<String,String>, Pair<Element,Element>> mapStoreTextAndChoiceToSelectAndOptionElement = new HashMap<>();
   Map<Pair<String, String>, Pair<String, String >> mapStoreLocatorOfSelectElementAndValueForPairTextAndChoice = new HashMap<>();
 
+  Map<Pair<String, String>, Pair<String, String>> storeNormalizePairTextAndChoiceAndIt = new HashMap<>();
 
   public static void main(String[] args) {
   }
   public Map<Pair<String, String>, Pair<String, String>> processDetectDropdownList(Map<String, List<String>> mapTextAndChoices, String linkHtml) {
-    mapStoreTextAndChoices = mapTextAndChoices;
+    normalizeInputMap(mapStoreNormalizeTextAndChoices, mapTextAndChoices, storeNormalizePairTextAndChoiceAndIt);
     String htmlContent = getHtmlContent(linkHtml);
     Document domTree = getDomTree(htmlContent);
     Elements childRoot = domTree.children();
@@ -35,32 +36,13 @@ public class SelectDropDownList extends ProcessDetectElement {
     return mapStoreLocatorOfSelectElementAndValueForPairTextAndChoice;
 
   }
-  public class Pair<F, S> {
 
-    private  F first;
-    private  S second;
-
-    public Pair() {
-
-    }
-    public Pair(F first, S second) {
-      this.first = first;
-      this.second = second;
-    }
-
-    public F getFirst() {
-      return first;
-    }
-
-    public S getSecond() {
-      return second;
-    }
-  }
 
   public void traversalDomTree(Element e) {
-    if (!e.ownText().isEmpty() && mapStoreTextAndChoices.containsKey(e.ownText())) {
-      String text = e.ownText();
-      traversalSubtree(e.parent(), text);
+    String text = e.ownText();
+    String normalizeText = normalize(text);
+    if (!normalizeText.isEmpty() && mapStoreNormalizeTextAndChoices.containsKey(normalizeText)) {
+      traversalSubtree(e.parent(), normalizeText);
     }
     if (isSelectElement(e) && !selectElements.contains(e)) {
       storeMapTextAndChoiceToSelectAndOptionElement(e,"",e);
@@ -77,8 +59,10 @@ public class SelectDropDownList extends ProcessDetectElement {
   private void storeMapTextAndChoiceToSelectAndOptionElement(Element root,String text, Element selectElement) {
     String tagNameCurrentElement = root.tagName();
     String textInCurrentElement = root.ownText();
-    if (tagNameCurrentElement.equals("option") && mapStoreTextAndChoices.get(text).contains(textInCurrentElement)) {
-      Pair<String, String> pairTextAndChoice = new Pair<>(text, textInCurrentElement);
+    String normalizeTextInCurrentElement = normalize(textInCurrentElement);
+    if (tagNameCurrentElement.equals("option") && mapStoreNormalizeTextAndChoices.get(text).contains(normalizeTextInCurrentElement)) {
+      Pair<String, String> normalizePairTextAndChoice = new Pair<>(text, normalizeTextInCurrentElement);
+      Pair<String, String> pairTextAndChoice = storeNormalizePairTextAndChoiceAndIt.get(normalizePairTextAndChoice);
       Pair<Element, Element> pairSelectAndOptionElement = new Pair<>(selectElement, root);
       mapStoreTextAndChoiceToSelectAndOptionElement.put(pairTextAndChoice, pairSelectAndOptionElement);
       detectLocatorOfSelectElementAndValueOptionCorrespondingToTextAndChoice(pairTextAndChoice, selectElement, root);

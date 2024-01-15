@@ -1,6 +1,9 @@
 package Elements;
 
 import java.text.BreakIterator;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -43,4 +46,22 @@ public abstract class ProcessDetectElement {
     return normalize_result;
   }
   public abstract void traversalDomTree(Element e);
+
+  public void normalizeInputMap(Map<String, List<String>> normalize, Map<String, List<String>> input, Map<Pair<String, String>, Pair<String, String>> storeNormalizePairTextAndChoiceAndIt) {
+    for (Map.Entry<String, List<String>> entry : input.entrySet()) {
+      String text = entry.getKey();
+      String normalizeText = normalize(text);
+      List<String> choices = entry.getValue();
+      List<String> normalizeChoices = new ArrayList<>();
+
+      for (String choice : choices) {
+        String normalizeChoice = normalize(choice);
+        normalizeChoices.add(normalizeChoice);
+        Pair<String, String> normalizePair = new Pair<>(normalizeText, normalizeChoice);
+        Pair<String, String> inputPair = new Pair<>(text, choice);
+        storeNormalizePairTextAndChoiceAndIt.put(normalizePair, inputPair);
+      }
+      normalize.put(normalizeText, normalizeChoices);
+    }
+  }
 }

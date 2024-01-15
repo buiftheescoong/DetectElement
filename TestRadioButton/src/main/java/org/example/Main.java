@@ -6,7 +6,7 @@ import java.util.Vector;
 public class Main {
 
   public static void main(String[] args) {
-    String in = "Do you use any kind ,of : illegal drugs; or have you ever  used   them ?  ";
+    String in = "";
     String input = in.toLowerCase();
     BreakIterator boundary = BreakIterator.getWordInstance();
     boundary.setText(input);

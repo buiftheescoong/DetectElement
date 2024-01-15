@@ -1,7 +1,7 @@
 package Test;
 
 import Elements.SelectDropDownList;
-import Elements.SelectDropDownList.Pair;
+import Elements.Pair;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,8 +12,8 @@ public class TestSelectDropDownList {
   public static void main(String[] args) {
     SelectDropDownList select = new SelectDropDownList();
     Map<String, List<String>> mapTextAndChoices = new HashMap<>();
-    mapTextAndChoices.put("What is your gender?", List.of(new String[]{"Male"}));
-    mapTextAndChoices.put("Do you use any kind of tobacco or have you ever used them?", List.of(new String[]{"Yes"}));
+    mapTextAndChoices.put(" what Is your gender ", List.of(new String[]{"maLe "}));
+    mapTextAndChoices.put("do you use any kind of tobacco or have  you ever  used  them", List.of(new String[]{" yes"}));
     mapTextAndChoices.put("Do you use any kind of illegal drugs or have you ever used them?", List.of(new String[]{"No"}));
 
 
