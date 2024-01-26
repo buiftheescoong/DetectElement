@@ -1,7 +1,7 @@
 package Test;
 
-import Elements.Checkbox;
-import Elements.Pair;
+import Detect.Checkbox;
+import Detect.Pair;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

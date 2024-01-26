@@ -1,9 +1,7 @@
 package Test;
 
-import Elements.ClickableElement;
+import Detect.ClickableElement;
 import java.util.Vector;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 
 public class TestClickableElement {
 

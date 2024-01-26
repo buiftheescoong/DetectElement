@@ -1,7 +1,7 @@
 package Test;
 
-import Elements.SelectDropDownList;
-import Elements.Pair;
+import Detect.SelectDropDownList;
+import Detect.Pair;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

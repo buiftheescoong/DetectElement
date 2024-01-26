@@ -1,4 +1,4 @@
-package Elements;
+package Detect;
 
 import java.text.BreakIterator;
 import java.util.HashMap;
@@ -10,7 +10,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class ClickableElement extends ProcessDetectElement{
+public class ClickableElement extends ProcessDetectElement {
   Vector<String> result_locator = new Vector<>();
   Map<String, String> mapStoreNormalizeAndVariableLocator = new HashMap<>();
   Map<String, String> mapStoreVariableLocatorAndValueLocator = new HashMap<>();

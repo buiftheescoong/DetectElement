@@ -3,11 +3,13 @@ package org.example;
 import java.text.BreakIterator;
 import java.util.Vector;
 
+
 public class Main {
 
   public static void main(String[] args) {
-    String in = "";
-    String input = in.toLowerCase();
+    String input = "user_name Login_Button";
+    // "What is your gender?"
+
     BreakIterator boundary = BreakIterator.getWordInstance();
     boundary.setText(input);
 
@@ -21,8 +23,6 @@ public class Main {
     }
     String normalize_result = String.join(" ", wordsAndPunctuation);
     System.out.println(normalize_result);
-
-
 
     }
 

@@ -1,7 +1,7 @@
 package Test;
 
-import Elements.Pair;
-import Elements.RadioButton;
+import Detect.Pair;
+import Detect.RadioButton;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

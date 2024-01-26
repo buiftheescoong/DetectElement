@@ -1,6 +1,6 @@
 package Test;
 
-import Elements.Input;
+import Detect.Input;
 import java.util.Vector;
 
 public class TestInputElement {
