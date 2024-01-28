@@ -1,29 +1,21 @@
 package org.example;
 
-import java.text.BreakIterator;
-import java.util.Vector;
-
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
-
   public static void main(String[] args) {
-    String input = "user_name Login_Button";
-    // "What is your gender?"
+    String chuoi = "q32_passengerName-Person _AAA-[prefix]";
+    Pattern pattern = Pattern.compile("([A-Z]?[a-z]+|[A-Z]+|[0-9]+)");
+    Matcher matcher = pattern.matcher(chuoi);
 
-    BreakIterator boundary = BreakIterator.getWordInstance();
-    boundary.setText(input);
-
-    int start = boundary.first();
-    Vector<String> wordsAndPunctuation = new Vector<>();
-    for (int end = boundary.next(); end != BreakIterator.DONE; start = end, end = boundary.next()) {
-      String wordOrPunctuation = input.substring(start, end);
-      if (!wordOrPunctuation.matches("\\s*") && !wordOrPunctuation.matches("\\p{Punct}")) {
-        wordsAndPunctuation.add(wordOrPunctuation);
-      }
+    java.util.List<String> tu_rieng_biet = new ArrayList<>();
+    while (matcher.find()) {
+      tu_rieng_biet.add(matcher.group());
     }
-    String normalize_result = String.join(" ", wordsAndPunctuation);
-    System.out.println(normalize_result);
 
-    }
+    System.out.println(tu_rieng_biet);
+  }
 
 }

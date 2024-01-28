@@ -89,7 +89,7 @@ public class NewApproachDetect {
         List<Weight> listWeight = new ArrayList<>();
         for (String s : input) {
             for (String text : listText) {
-                if (calculateWeight(s,text) > 0) {
+                if (CalculateWeight.weightBetweenTwoString(s,text) > 0) {
                     List<Element> list = textAndElement.get(text);
                     Weight w = new Weight(s, text, list, document);
                     listWeight.add(w);
@@ -107,6 +107,7 @@ public class NewApproachDetect {
                     storeInputAndElement.put(source, result);
                     String loc = getXpath(result);
                     storeInputAndLocator.put(source, loc);
+                    System.out.println(source + " " + result + " " + listWeight.get(i).getWeight() + " " + listWeight.get(i).full);
                 }
             }
         }
@@ -156,28 +157,18 @@ public class NewApproachDetect {
         return xpath;
     }
 
-    public static int calculateWeight(String source, String target) {
-        int res = 0;
-        String lowercase_target = target.toLowerCase();
-        String[] arr = source.split(" ");
-        for (int i = 0; i < arr.length; i++) {
-            if (lowercase_target.contains(arr[i])) {
-                res++;
-            }
-        }
-        return res;
-    }
+
 
     public static void main(String[] args) {
         String linkHtml = "https://form.jotform.com/233591551157458?fbclid=IwAR1ggczzG7OoN6Dgb2SDWtNyznCAAJNW-G8-_3gnejJwPFunwwBuN_NCvh0";
         List<String> input = new ArrayList<>();
-        input.add("first name in passenger");
-        input.add("last name in passenger");
-        input.add("first name in contact person");
-        input.add("last name in contact person");
+        input.add("First-name_in_passenger");
+        input.add("last_name in passenger");
+        input.add("first_name in contact_person");
+        input.add("last-Name In contact_person");
         input.add("title in contact person");
-        input.add("title in passenger name");
-        input.add("e mail");
+        input.add("Title[in-passenger_name");
+        input.add("e-mail");
         input.add("area code");
         input.add("phone");
         input.add("street address");

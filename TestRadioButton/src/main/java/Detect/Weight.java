@@ -31,15 +31,7 @@ public class Weight implements TypeElement, Comparable<Weight> {
     }
 
     public int calculateWeight(String target) {
-        int res = 0;
-        String lowercase_target = target.toLowerCase();
-        String[] arr = source.split(" ");
-        for (int i = 0; i < arr.length; i++) {
-            if (lowercase_target.contains(arr[i])) {
-                res++;
-            }
-        }
-        return res;
+        return CalculateWeight.weightBetweenTwoString(source, target);
     }
 
     public double calculatePercent(String target,Element e) {
@@ -48,11 +40,13 @@ public class Weight implements TypeElement, Comparable<Weight> {
             return 0;
         }
         Set<String> visitedWord = new HashSet<>();
-        String lowercase_target = target.toLowerCase();
-        String[] arr = source.split(" ");
-        for (int i = 0; i < arr.length; i++) {
-            if (lowercase_target.contains(arr[i])) {
-                visitedWord.add(arr[i]);
+        List<String> wordsInSource = HandleString.separateWordsInString(source);
+        HandleString.lowercaseWordsInList(wordsInSource);
+        List<String> wordsInTarget = HandleString.separateWordsInString(target);
+        HandleString.lowercaseWordsInList(wordsInTarget);
+        for (String w : wordsInSource) {
+            if (wordsInTarget.contains(w)) {
+                visitedWord.add(w);
             }
         }
         if (e.attributesSize() > 0) {
@@ -60,10 +54,11 @@ public class Weight implements TypeElement, Comparable<Weight> {
             for (Attribute attr : attributes) {
                 String valueOfAttr = attr.getValue();
                 if (!valueOfAttr.isEmpty()) {
-                    String lowercase_value = valueOfAttr.toLowerCase();
-                    for (int i = 0; i < arr.length; i++) {
-                        if (lowercase_value.contains(arr[i])) {
-                            visitedWord.add(arr[i]);
+                    List<String> wordsInValue = HandleString.separateWordsInString(valueOfAttr);
+                    HandleString.lowercaseWordsInList(wordsInValue);
+                    for (String w : wordsInSource) {
+                        if (wordsInValue.contains(w)) {
+                            visitedWord.add(w);
                         }
                     }
                 }
@@ -71,7 +66,7 @@ public class Weight implements TypeElement, Comparable<Weight> {
         }
 
         int size = visitedWord.size();
-        res = 1.0 * size / arr.length;
+        res = 1.0 * size / wordsInSource.size();
         return res;
     }
 
@@ -97,21 +92,26 @@ public class Weight implements TypeElement, Comparable<Weight> {
             return 0;
         }
         Set<String> visitedWord = new HashSet<>();
-        String[] arr = source.split(" ");
-        Attributes attributes = e.attributes();
-        for (Attribute attr : attributes) {
-            String valueOfAttr = attr.getValue();
-            if (!valueOfAttr.isEmpty()) {
-                String lowercase_value = valueOfAttr.toLowerCase();
-                for (int i = 0; i < arr.length; i++) {
-                    if (lowercase_value.contains(arr[i])) {
-                        visitedWord.add(arr[i]);
+        List<String> wordsInSource = HandleString.separateWordsInString(source);
+        HandleString.lowercaseWordsInList(wordsInSource);
+        if (e.attributesSize() > 0) {
+            Attributes attributes = e.attributes();
+            for (Attribute attr : attributes) {
+                String valueOfAttr = attr.getValue();
+                if (!valueOfAttr.isEmpty()) {
+                    List<String> wordsInValue = HandleString.separateWordsInString(valueOfAttr);
+                    HandleString.lowercaseWordsInList(wordsInValue);
+                    for (String w : wordsInSource) {
+                        if (wordsInValue.contains(w)) {
+                            visitedWord.add(w);
+                        }
                     }
                 }
             }
         }
+
         int size = visitedWord.size();
-        res = 1.0 * size / arr.length;
+        res = 1.0 * size / wordsInSource.size();
         return res;
     }
     public Pair<Pair<Integer, Double>, Element> calculateWeightWithElementOfText(Element e) {
@@ -217,8 +217,6 @@ public class Weight implements TypeElement, Comparable<Weight> {
         }
     }
 
-    public static void main(String[] args) {
-        System.out.println(1.0 * 3 / 4);
-    }
+
 
 }
