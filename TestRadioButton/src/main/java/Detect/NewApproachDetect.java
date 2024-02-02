@@ -33,7 +33,7 @@ public class NewApproachDetect {
             return;
         }
         String text = e.ownText();
-        if (text.isEmpty() && isInputElement(e)) {
+        if (text.isEmpty() && HandleElement.isInputElement(e)) {
             String placeholder = e.attr("placeholder");
             if (!placeholder.isEmpty()) {
                 if (!listText.contains(placeholder)) {
@@ -71,16 +71,7 @@ public class NewApproachDetect {
         }
     }
 
-    public static boolean isInputElement(Element e) {
-        if (e == null) {
-            return false;
-        }
-        if (e.tagName().equals("textarea") || (e.tagName().equals("input") && !e.attr("type").equals("submit") && !e.attr("type").equals("checkbox")
-                && !e.attr("type").equals("radio") && !e.attr("type").equals("hidden"))) {
-            return true;
-        }
-        return false;
-    }
+
     public static Map<String, String> process(List<String> input, String linkHtml) {
         String htmlContent = getHtmlContent(linkHtml);
         Document document = getDomTree(htmlContent);
@@ -89,14 +80,19 @@ public class NewApproachDetect {
         List<Weight> listWeight = new ArrayList<>();
         for (String s : input) {
             for (String text : listText) {
-                if (CalculateWeight.weightBetweenTwoString(s,text) > 0) {
+                if (Calculator.weightBetweenTwoString(s,text) > 0) {
                     List<Element> list = textAndElement.get(text);
                     Weight w = new Weight(s, text, list, document);
                     listWeight.add(w);
                 }
             }
         }
-        Collections.sort(listWeight);
+        if (listWeight.size() == 1) {
+            listWeight.get(0).getWeight();
+        } else {
+            Collections.sort(listWeight);
+        }
+
         Map<String, String> storeInputAndLocator = new HashMap<>();
         Map<String, Element> storeInputAndElement = new HashMap<>();
         for (int i = listWeight.size() - 1; i >= 0; i--) {
@@ -107,7 +103,7 @@ public class NewApproachDetect {
                     storeInputAndElement.put(source, result);
                     String loc = getXpath(result);
                     storeInputAndLocator.put(source, loc);
-                    System.out.println(source + " " + result + " " + listWeight.get(i).getWeight() + " " + listWeight.get(i).full);
+                    System.out.println(source + " " + result + " " + listWeight.get(i).weight + " " + listWeight.get(i).full) ;
                 }
             }
         }
@@ -158,28 +154,27 @@ public class NewApproachDetect {
     }
 
 
-
     public static void main(String[] args) {
-        String linkHtml = "https://form.jotform.com/233591551157458?fbclid=IwAR1ggczzG7OoN6Dgb2SDWtNyznCAAJNW-G8-_3gnejJwPFunwwBuN_NCvh0";
-        List<String> input = new ArrayList<>();
-        input.add("First-name_in_passenger");
-        input.add("last_name in passenger");
-        input.add("first_name in contact_person");
-        input.add("last-Name In contact_person");
-        input.add("title in contact person");
-        input.add("Title[in-passenger_name");
-        input.add("e-mail");
-        input.add("area code");
-        input.add("phone");
-        input.add("street address");
-        input.add("street address 2");
-        input.add("city in address");
-        input.add("postal or zip code");
-        input.add("state or province");
-
+        String linkHtml = "https://demoqa.com/login";
+        List<String> input = Arrays.asList("User", "pass");
+//        String linkHtml = "https://form.jotform.com/233591551157458?fbclid=IwAR1ggczzG7OoN6Dgb2SDWtNyznCAAJNW-G8-_3gnejJwPFunwwBuN_NCvh0";
+//        List<String> input = new ArrayList<>();
+//        input.add("First-name_in_passenger");
+//        input.add("last_name in passenger");
+//        input.add("first_name in contact_person");
+//        input.add("last-Name In contact_person");
+//        input.add("title in contact person");
+//        input.add("Title[in-passenger_name");
+//        input.add("e-mail");
+//        input.add("area code");
+//        input.add("phone");
+//        input.add("street address");
+//        input.add("street address 2");
+//        input.add("city in address");
+//        input.add("postal or zip code");
+//        input.add("state or province");
         Map<String, String> res = process(input, linkHtml);
         System.out.println(res);
-
     }
 
 }

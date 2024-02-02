@@ -6,13 +6,14 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 
-public class Weight implements TypeElement, Comparable<Weight> {
+
+
+public class Weight implements Comparable<Weight> {
     public String source;
     public String text;
     public List<Element> elementOfText;
@@ -31,7 +32,10 @@ public class Weight implements TypeElement, Comparable<Weight> {
     }
 
     public int calculateWeight(String target) {
-        return CalculateWeight.weightBetweenTwoString(source, target);
+        if (elementOfText.size() == 1 && HandleElement.isInputElement(elementOfText.get(0)) && elementOfText.get(0).ownText().isEmpty()) {
+            return 0;
+        }
+        return Calculator.weightBetweenTwoString(source, target);
     }
 
     public double calculatePercent(String target,Element e) {
@@ -42,31 +46,22 @@ public class Weight implements TypeElement, Comparable<Weight> {
         Set<String> visitedWord = new HashSet<>();
         List<String> wordsInSource = HandleString.separateWordsInString(source);
         HandleString.lowercaseWordsInList(wordsInSource);
-        List<String> wordsInTarget = HandleString.separateWordsInString(target);
-        HandleString.lowercaseWordsInList(wordsInTarget);
-        for (String w : wordsInSource) {
-            if (wordsInTarget.contains(w)) {
-                visitedWord.add(w);
-            }
-        }
+        Set<String> distinctWordsInSource = new HashSet<>(wordsInSource);
+        Calculator.calculatePercentBetweenTwoStrings(source, target, visitedWord);
         if (e.attributesSize() > 0) {
             Attributes attributes = e.attributes();
             for (Attribute attr : attributes) {
-                String valueOfAttr = attr.getValue();
-                if (!valueOfAttr.isEmpty()) {
-                    List<String> wordsInValue = HandleString.separateWordsInString(valueOfAttr);
-                    HandleString.lowercaseWordsInList(wordsInValue);
-                    for (String w : wordsInSource) {
-                        if (wordsInValue.contains(w)) {
-                            visitedWord.add(w);
-                        }
+                String typeAttr = attr.getKey();
+                if (!Setting.except_attrs.contains(typeAttr)) {
+                    String valueOfAttr = attr.getValue();
+                    if (!valueOfAttr.isEmpty()) {
+                        Calculator.calculatePercentBetweenTwoStrings(source, valueOfAttr, visitedWord);
                     }
                 }
             }
         }
-
         int size = visitedWord.size();
-        res = 1.0 * size / wordsInSource.size();
+        res = 1.0 * size / distinctWordsInSource.size();
         return res;
     }
 
@@ -76,11 +71,30 @@ public class Weight implements TypeElement, Comparable<Weight> {
         if (e == null || e.attributes().size() == 0) {
             return 0;
         }
+//        List<String> wordsInSource = HandleString.separateWordsInString(source);
+//        HandleString.lowercaseWordsInList(wordsInSource);
+//        List<String> distinctWordsInSource = HandleString.distinctWordsInString(wordsInSource);
         Attributes attributes = e.attributes();
-        for (Attribute attr : attributes) {
-            String valueOfAttr = attr.getValue();
-            if (!valueOfAttr.isEmpty()) {
-                res += calculateWeight(valueOfAttr);
+        if (e.attributesSize() > 0) {
+            for (Attribute attr : attributes) {
+                String typeAttr = attr.getKey();
+                if (!Setting.except_attrs.contains(typeAttr)) {
+                    String valueOfAttr = attr.getValue();
+                    if (!valueOfAttr.isEmpty()) {
+                        res += Calculator.weightBetweenTwoString(source, valueOfAttr);
+//                        List<String> wordsInValue = HandleString.separateWordsInString(valueOfAttr);
+//                        HandleString.lowercaseWordsInList(wordsInValue);
+//                        String tmp = "";
+//                        for (int i = 0; i < wordsInValue.size(); i++) {
+//
+//                            int idx= HandleString.calculateWeightOfAttributeAndTextWords(i, distinctWordsInSource, tmp, wordsInValue);
+//                            if (idx != -1) {
+//                                i = idx;
+//                                res += 1;
+//                            }
+//                        }
+                    }
+                }
             }
         }
         return res;
@@ -94,43 +108,51 @@ public class Weight implements TypeElement, Comparable<Weight> {
         Set<String> visitedWord = new HashSet<>();
         List<String> wordsInSource = HandleString.separateWordsInString(source);
         HandleString.lowercaseWordsInList(wordsInSource);
+        Set<String> distinctWordsInSource = new HashSet<>(wordsInSource);
         if (e.attributesSize() > 0) {
             Attributes attributes = e.attributes();
             for (Attribute attr : attributes) {
-                String valueOfAttr = attr.getValue();
-                if (!valueOfAttr.isEmpty()) {
-                    List<String> wordsInValue = HandleString.separateWordsInString(valueOfAttr);
-                    HandleString.lowercaseWordsInList(wordsInValue);
-                    for (String w : wordsInSource) {
-                        if (wordsInValue.contains(w)) {
-                            visitedWord.add(w);
-                        }
+                String typeAttr = attr.getKey();
+                if (!Setting.except_attrs.contains(typeAttr)) {
+                    String valueOfAttr = attr.getValue();
+                    if (!valueOfAttr.isEmpty()) {
+//                        List<String> wordsInValue = HandleString.separateWordsInString(valueOfAttr);
+//                        HandleString.lowercaseWordsInList(wordsInValue);
+//                        String tmp = "";
+//                        for (int i = 0; i < wordsInValue.size(); i++) {
+//
+//                            int idx= HandleString.calculateWeightOfAttributeAndTextWords(i, wordsInSource, tmp, wordsInValue, visitedWord);
+//                            if (idx != -1) {
+//                                i = idx;
+//                            }
+//                        }
+                        Calculator.calculatePercentBetweenTwoStrings(source, valueOfAttr, visitedWord);
                     }
                 }
             }
         }
 
         int size = visitedWord.size();
-        res = 1.0 * size / wordsInSource.size();
+        res = 1.0 * size / distinctWordsInSource.size();
         return res;
     }
     public Pair<Pair<Integer, Double>, Element> calculateWeightWithElementOfText(Element e) {
         int res = 0;
         double per = 0;
         Element tmp = null;
-        if (type(e)) {
+        if (HandleElement.isInputElement(e)) {
             res = calculateWeight(e);
             per = calculatePercent(e);
             tmp = e;
         } else {
-            if (isLabel(e)) {
+            if (HandleElement.isLabelHasForAttr(e)) {
                 String id = e.attr("for");
                 Elements elements = doc.select("#"+ id);
                 if (elements.isEmpty()) {
                     res = 0;
                 } else {
                     Element elementAssociatedWithLabel = elements.get(0);
-                    if (type(elementAssociatedWithLabel)) {
+                    if (HandleElement.isInputElement(elementAssociatedWithLabel)) {
                         res = calculateWeight(elementAssociatedWithLabel);
                         per = calculatePercent(elementAssociatedWithLabel);
                         tmp = elementAssociatedWithLabel;
@@ -138,7 +160,13 @@ public class Weight implements TypeElement, Comparable<Weight> {
                 }
 
             } else {
+                Element elem = HandleElement.searchInputElementInSubtree(text, e);
 
+                if (elem != null) {
+                    res = calculateWeight(elem);
+                    per = calculatePercent(elem);
+                    tmp = elem;
+                }
             }
         }
         Integer object_res = res;
@@ -174,27 +202,6 @@ public class Weight implements TypeElement, Comparable<Weight> {
     }
 
 
-    @Override
-    public boolean type(Element e) {
-        if (e == null) {
-            return false;
-        }
-        if (e.tagName().equals("textarea") || (e.tagName().equals("input") && !e.attr("type").equals("submit") && !e.attr("type").equals("checkbox")
-        && !e.attr("type").equals("radio") && !e.attr("type").equals("hidden"))) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isLabel(Element e) {
-        if (e == null) {
-            return false;
-        }
-        if (e.tagName().equals("label") && e.hasAttr("for") && !e.attr("for").isEmpty()) {
-            return true;
-        }
-        return false;
-    }
 
     public int getWeight() {
         weight = calculateWeight(text) + getMaxWeightInListElementOfText();
@@ -216,7 +223,5 @@ public class Weight implements TypeElement, Comparable<Weight> {
             }
         }
     }
-
-
 
 }

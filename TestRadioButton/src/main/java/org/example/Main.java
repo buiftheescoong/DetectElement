@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 public class Main {
   public static void main(String[] args) {
-    String chuoi = "q32_passengerName-Person _AAA-[prefix]";
+    String chuoi = "Joomla.submitbutton('user.save');\"";
     Pattern pattern = Pattern.compile("([A-Z]?[a-z]+|[A-Z]+|[0-9]+)");
     Matcher matcher = pattern.matcher(chuoi);
 
