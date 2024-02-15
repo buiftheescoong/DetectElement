@@ -21,7 +21,8 @@ public class Weight implements Comparable<Weight> {
     public Element result;
     public double full;
     public int weight;
-    public Weight(String source, String text, List<Element> list, Document document) {
+    public String type;
+    public Weight(String source, String text, List<Element> list, Document document, String type) {
         this.source = source;
         this.text = text;
         this.doc = document;
@@ -29,12 +30,11 @@ public class Weight implements Comparable<Weight> {
         result = null;
         full = 0;
         weight = 0;
+        this.type = type;
     }
 
     public int calculateWeight(String target) {
-        if (elementOfText.size() == 1 && HandleElement.isInputElement(elementOfText.get(0)) && elementOfText.get(0).ownText().isEmpty()) {
-            return 0;
-        }
+
         return Calculator.weightBetweenTwoString(source, target);
     }
 
@@ -140,32 +140,60 @@ public class Weight implements Comparable<Weight> {
         int res = 0;
         double per = 0;
         Element tmp = null;
-        if (HandleElement.isInputElement(e)) {
-            res = calculateWeight(e);
-            per = calculatePercent(e);
-            tmp = e;
-        } else {
-            if (HandleElement.isLabelHasForAttr(e)) {
-                String id = e.attr("for");
-                Elements elements = doc.select("#"+ id);
-                if (elements.isEmpty()) {
-                    res = 0;
+        if (type.equals("input")) {
+            if (HandleElement.isInputElement(e)) {
+                res = calculateWeight(e);
+                per = calculatePercent(e);
+                tmp = e;
+            } else {
+                if (HandleElement.isLabelHasForAttr(e)) {
+                    String id = e.attr("for");
+                    Elements elements = doc.select("#"+ id);
+                    if (elements.isEmpty()) {
+                        res = 0;
+                    } else {
+                        Element elementAssociatedWithLabel = elements.get(0);
+                        if (HandleElement.isInputElement(elementAssociatedWithLabel)) {
+                            res = calculateWeight(elementAssociatedWithLabel);
+                            per = calculatePercent(elementAssociatedWithLabel);
+                            tmp = elementAssociatedWithLabel;
+                        }
+                    }
+
                 } else {
-                    Element elementAssociatedWithLabel = elements.get(0);
-                    if (HandleElement.isInputElement(elementAssociatedWithLabel)) {
-                        res = calculateWeight(elementAssociatedWithLabel);
-                        per = calculatePercent(elementAssociatedWithLabel);
-                        tmp = elementAssociatedWithLabel;
+                    Element elem = HandleElement.searchInputElementInSubtree(text, e);
+                    if (elem != null) {
+                        res = calculateWeight(elem);
+                        per = calculatePercent(elem);
+                        tmp = elem;
                     }
                 }
-
+            }
+        }
+        if (type.equals("click")) {
+            if (HandleElement.isDefaultClickableElement(e)) {
+                res = calculateWeight(e);
+                per = calculatePercent(e);
+                tmp = e;
             } else {
-                Element elem = HandleElement.searchInputElementInSubtree(text, e);
+                if (HandleElement.isLabelHasForAttr(e)) {
+                    String id = e.attr("for");
+                    Elements elements = doc.select("#"+ id);
+                    if (elements.isEmpty()) {
+                        res = 0;
+                    } else {
+                        Element elementAssociatedWithLabel = elements.get(0);
+                        if (HandleElement.isDefaultClickableElement(elementAssociatedWithLabel)) {
+                            res = calculateWeight(elementAssociatedWithLabel);
+                            per = calculatePercent(elementAssociatedWithLabel);
+                            tmp = elementAssociatedWithLabel;
+                        }
+                    }
 
-                if (elem != null) {
-                    res = calculateWeight(elem);
-                    per = calculatePercent(elem);
-                    tmp = elem;
+                } else {
+                    res = calculateWeight(e);
+                    per = calculatePercent(e);
+                    tmp = e;
                 }
             }
         }
@@ -174,8 +202,8 @@ public class Weight implements Comparable<Weight> {
         return new Pair<>(new Pair<>(object_res, object_per), tmp);
     }
     public int getMaxWeightInListElementOfText() {
-        int max_res = 0;
-        double max_per = 0;
+        int max_res = -1;
+        double max_per = -1;
         Element tmp_result = null;
         for (Element e : elementOfText) {
              Pair<Pair<Integer, Double>, Element> p = calculateWeightWithElementOfText(e);
@@ -183,6 +211,9 @@ public class Weight implements Comparable<Weight> {
              Integer res = first.getFirst();
              Double per = first.getSecond();
              Element second = p.getSecond();
+             if (second == null) {
+                 continue;
+             }
              if (per > max_per) {
                  max_per = per;
                  max_res = res;
@@ -204,7 +235,14 @@ public class Weight implements Comparable<Weight> {
 
 
     public int getWeight() {
-        weight = calculateWeight(text) + getMaxWeightInListElementOfText();
+        int weightBetweenTextAndSource = calculateWeight(text);
+        weight = weightBetweenTextAndSource + getMaxWeightInListElementOfText();
+        if (type.equals("input") && elementOfText.size() == 1 && HandleElement.isInputElement(elementOfText.get(0)) && elementOfText.get(0).ownText().isEmpty()) {
+            weight -= weightBetweenTextAndSource;
+        }
+        if (type.equals("click") && HandleElement.isClickElementTagInput(result)) {
+            weight -= weightBetweenTextAndSource;
+        }
         full = calculatePercent(text, result);
         return weight;
     }

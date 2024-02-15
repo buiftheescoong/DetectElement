@@ -2,6 +2,7 @@ package GetPageSource;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -27,6 +28,7 @@ public class UsingSelenium extends ProcessGetPageSource {
         return htmlContent;
     }
 
+
 //    public static void main(String[] args) {
 //        String linkHtml = "https://form.jotform.com/233591282365460";
 //        String content = getHtmlContent(linkHtml);
@@ -37,6 +39,15 @@ public class UsingSelenium extends ProcessGetPageSource {
 //        }
 //    }
 
+    public static void main(String[] args) throws InterruptedException {
+        WebDriver driver = new ChromeDriver();
+//        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+        driver.get("https://form.jotform.com/233591551157458");
+
+        WebElement elem = driver.findElement(By.xpath("//*[@id=\"input_9_country\"]/option[3]"));
+        System.out.println(elem.isDisplayed());
+        driver.quit();
+    }
 
 
 }
