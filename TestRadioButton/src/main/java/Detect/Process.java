@@ -28,10 +28,10 @@ public class Process {
     public static String getXpath(Element e) {
         int attributes_size = e.attributesSize();
         String xpath = "";
+        xpath += "//" + e.tagName() + "[";
+        boolean havingPreviousAttribute = false;
         if (attributes_size > 0) {
             Attributes attr = e.attributes();
-            xpath += "//" + e.tagName() + "[";
-            boolean havingPreviousAttribute = false;
             if (e.hasAttr("id") && !e.attr("id").isEmpty()) {
                 xpath += "@id=" + "'" + e.attr("id") + "']";
                 return xpath;
@@ -54,17 +54,17 @@ public class Process {
                     }
                 }
             }
-
-            String textOfElement = e.ownText();
-            if (havingPreviousAttribute && !textOfElement.matches("\\s*")) {
-                xpath += " and " + "normalize-space()=" + "'" + textOfElement + "'";
-            } else {
-                if (!textOfElement.matches("\\s*")) {
-                    xpath += "normalize-space()=" + "'" + textOfElement + "'";
-                }
-            }
-            xpath += "]";
         }
+
+        String textOfElement = e.ownText();
+        if (havingPreviousAttribute && !textOfElement.matches("\\s*")) {
+            xpath += " and " + "normalize-space()=" + "'" + textOfElement + "'";
+        } else {
+            if (!textOfElement.matches("\\s*")) {
+                xpath += "normalize-space()=" + "'" + textOfElement + "'";
+            }
+        }
+        xpath += "]";
         return xpath;
     }
 

@@ -102,27 +102,27 @@ public class InputElement {
 
 
         public static void main(String[] args) {
-//        String linkHtml = "https://demoqa.com/login";
-//        List<String> input = Arrays.asList("username", "pass");
-        List<String> click = Arrays.asList("next", "backButton", "Submit");
-            String linkHtml = "https://form.jotform.com/233591551157458?fbclid=IwAR1ggczzG7OoN6Dgb2SDWtNyznCAAJNW-G8-_3gnejJwPFunwwBuN_NCvh0";
+        String linkHtml = "https://www.turtlediary.com/kids-stories.html";
+        List<String> input = Arrays.asList("search");
+        List<String> click = Arrays.asList("login", "boat in the moat", "the clock");
+//            String linkHtml = "https://form.jotform.com/233591551157458?fbclid=IwAR1ggczzG7OoN6Dgb2SDWtNyznCAAJNW-G8-_3gnejJwPFunwwBuN_NCvh0";
             String htmlContent = Process.getHtmlContent(linkHtml);
             Document document = Process.getDomTree(htmlContent);
-            List<String> input = new ArrayList<>();
-        input.add("First-name_in_passenger");
-        input.add("last_name in passenger");
-        input.add("first_name in contact_person");
-        input.add("last-Name In contact_person");
-            input.add("title contact person");
-        input.add("Title[in-passenger_name");
-        input.add("e-mail");
-        input.add("area code");
-        input.add("phone");
-        input.add("street address");
-        input.add("street address 2");
-        input.add("city in address");
-        input.add("zip");
-        input.add("state or province");
+//            List<String> input = new ArrayList<>();
+//        input.add("First-name_in_passenger");
+//        input.add("last_name in passenger");
+//        input.add("first_name in contact_person");
+//        input.add("last-Name In contact_person");
+//            input.add("title contact person");
+//        input.add("Title[in-passenger_name");
+//        input.add("e-mail");
+//        input.add("area code");
+//        input.add("phone");
+//        input.add("street address");
+//        input.add("street address 2");
+//        input.add("city in address");
+//        input.add("zip");
+//        input.add("state or province");
         Map<String, String> res = detectInputElement(input, document);
             System.out.println(res);
             Map<String, String> res_click = ClickElement.detectClickElement(click, document);
