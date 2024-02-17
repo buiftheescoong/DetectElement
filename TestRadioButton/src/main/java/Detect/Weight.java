@@ -46,13 +46,13 @@ public class Weight implements Comparable<Weight> {
         Set<String> visitedWord = new HashSet<>();
         List<String> wordsInSource = HandleString.separateWordsInString(source);
         HandleString.lowercaseWordsInList(wordsInSource);
-        Set<String> distinctWordsInSource = new HashSet<>(wordsInSource);
+        List<String> distinctWordsInSource = HandleString.distinctWordsInString(wordsInSource);
         Calculator.calculatePercentBetweenTwoStrings(source, target, visitedWord);
         if (e.attributesSize() > 0) {
             Attributes attributes = e.attributes();
             for (Attribute attr : attributes) {
                 String typeAttr = attr.getKey();
-                if (!Setting.except_attrs.contains(typeAttr)) {
+                if (!Setting.EXCEPT_ATTRS.contains(typeAttr)) {
                     String valueOfAttr = attr.getValue();
                     if (!valueOfAttr.isEmpty()) {
                         Calculator.calculatePercentBetweenTwoStrings(source, valueOfAttr, visitedWord);
@@ -78,7 +78,7 @@ public class Weight implements Comparable<Weight> {
         if (e.attributesSize() > 0) {
             for (Attribute attr : attributes) {
                 String typeAttr = attr.getKey();
-                if (!Setting.except_attrs.contains(typeAttr)) {
+                if (!Setting.EXCEPT_ATTRS.contains(typeAttr)) {
                     String valueOfAttr = attr.getValue();
                     if (!valueOfAttr.isEmpty()) {
                         res += Calculator.weightBetweenTwoString(source, valueOfAttr);
@@ -108,12 +108,12 @@ public class Weight implements Comparable<Weight> {
         Set<String> visitedWord = new HashSet<>();
         List<String> wordsInSource = HandleString.separateWordsInString(source);
         HandleString.lowercaseWordsInList(wordsInSource);
-        Set<String> distinctWordsInSource = new HashSet<>(wordsInSource);
+        List<String> distinctWordsInSource = HandleString.distinctWordsInString(wordsInSource);
         if (e.attributesSize() > 0) {
             Attributes attributes = e.attributes();
             for (Attribute attr : attributes) {
                 String typeAttr = attr.getKey();
-                if (!Setting.except_attrs.contains(typeAttr)) {
+                if (!Setting.EXCEPT_ATTRS.contains(typeAttr)) {
                     String valueOfAttr = attr.getValue();
                     if (!valueOfAttr.isEmpty()) {
 //                        List<String> wordsInValue = HandleString.separateWordsInString(valueOfAttr);

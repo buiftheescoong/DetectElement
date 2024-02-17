@@ -62,7 +62,6 @@ public class Select {
         for (int i = listWeight.size() - 1; i >= 0; i--) {
             String source = listWeight.get(i).source;
             Element result = listWeight.get(i).result;
-            System.out.println(source + " " +  listWeight.get(i).text + " " + result + " " + listWeight.get(i).weight + " " + listWeight.get(i).full) ;
             if (result != null) {
                 if (!storeInputAndElement.containsKey(source) && !storeInputAndElement.containsValue(result)) {
                     storeInputAndElement.put(source, result);

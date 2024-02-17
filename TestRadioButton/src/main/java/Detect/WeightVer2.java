@@ -31,7 +31,7 @@ public class WeightVer2 implements Comparable<WeightVer2> {
         if (e.attributesSize() > 0) {
             for (Attribute attr : attributes) {
                 String typeAttr = attr.getKey();
-                if (!Setting.except_attrs.contains(typeAttr)) {
+                if (!Setting.EXCEPT_ATTRS.contains(typeAttr)) {
                     String valueOfAttr = attr.getValue();
                     if (!valueOfAttr.isEmpty()) {
                         res += Calculator.weightBetweenTwoString(source, valueOfAttr);
@@ -56,7 +56,7 @@ public class WeightVer2 implements Comparable<WeightVer2> {
             Attributes attributes = e.attributes();
             for (Attribute attr : attributes) {
                 String typeAttr = attr.getKey();
-                if (!Setting.except_attrs.contains(typeAttr)) {
+                if (!Setting.EXCEPT_ATTRS.contains(typeAttr)) {
                     String valueOfAttr = attr.getValue();
                     if (!valueOfAttr.isEmpty()) {
                         Calculator.calculatePercentBetweenTwoStrings(source, valueOfAttr, visitedWord);

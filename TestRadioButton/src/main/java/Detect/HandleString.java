@@ -23,10 +23,11 @@ public class HandleString {
     public static List<String> distinctWordsInString(List<String> list) {
         List<String> res = new ArrayList<>();
         for (String s : list) {
-            if (res.isEmpty() || !res.contains(s)) {
+            if ((res.isEmpty() || !res.contains(s)) && !Setting.STOP_WORDS.contains(s) && !Setting.HEURISTIC_STOP_WORDS.contains(s)) {
                 res.add(s);
             }
         }
+
         return res;
     }
 
