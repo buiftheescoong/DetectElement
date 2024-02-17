@@ -17,7 +17,7 @@ public class InputElement {
         static Map<String, List<Element>> textAndElement = new HashMap<>();
         static List<String> listText = new ArrayList<>();
 
-        public static void getAllText(Element e) {
+        public static void getAllTextForInput(Element e) {
             if (e == null || (HandleElement.isInteractableElement(e) && !HandleElement.isInputElement(e))) {
                 return;
             }
@@ -56,14 +56,14 @@ public class InputElement {
                 }
             }
             for (Element child : e.children()) {
-                getAllText(child);
+                getAllTextForInput(child);
             }
         }
 
 
         public static Map<String, String> detectInputElement(List<String> input, Document document) {
             Element body = document.body();
-            getAllText(body);
+            getAllTextForInput(body);
             System.out.println(listText);
             List<Weight> listWeight = new ArrayList<>();
             for (String s : input) {

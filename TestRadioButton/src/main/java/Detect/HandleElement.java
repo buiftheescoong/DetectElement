@@ -41,9 +41,32 @@ public class HandleElement {
         return searchInputElementInSubtree(text, e.parent());
     }
 
-//    public static Element searchClickableElementInSubtree(String text, Element e) {
-//
-//    }
+    public static Element searchSelectElementInSubtree(String text, Element e) {
+       Elements elems = e.select("*");
+       int cnt_interact = 0;
+       Element select = null;
+       for (Element ele : elems) {
+           if (isInteractableElement(ele) && !isSelectElement(ele)) {
+               return null;
+           }
+           if (ele.tagName().equals("option")) {
+               continue;
+           }
+           String t = e.ownText();
+           if (!t.isEmpty() && !t.equals(text)) {
+               return null;
+           }
+           if (isSelectElement(ele)) {
+               select = ele;
+           }
+       }
+       if (select == null) {
+           return searchSelectElementInSubtree(text, e.parent());
+       }
+       return select;
+
+
+    }
 
 
     public static boolean isDefaultClickableElement(Element e) {
@@ -111,11 +134,27 @@ public class HandleElement {
         Elements res = new Elements();
         Elements textarea_tag = e.getElementsByTag("textarea");
         Elements input_tag = e.getElementsByTag("input");
-        if (textarea_tag != null && textarea_tag.size() > 0) {
+        Elements select_tag = e.getElementsByTag("select");
+        Elements a_tag = e.getElementsByTag("a");
+        Elements img_tag = e.getElementsByTag("img");
+        Elements button = e.getElementsByTag("button");
+        if (textarea_tag != null) {
             res.addAll(textarea_tag);
         }
         if (input_tag != null) {
             res.addAll(input_tag);
+        }
+        if (select_tag != null) {
+            res.addAll(select_tag);
+        }
+        if (a_tag != null) {
+            res.addAll(a_tag);
+        }
+        if (img_tag != null) {
+            res.addAll(img_tag);
+        }
+        if (button != null) {
+            res.addAll(button);
         }
         return res;
     }
@@ -131,12 +170,23 @@ public class HandleElement {
     }
 
     public static void main(String[] args) {
-        Process n = new Process();
-        String linkHtml = "https://demoqa.com/login";
-        String htmlContent = n.getHtmlContent(linkHtml);
-        Document document = n.getDomTree(htmlContent);
-        Element body = document.body();
-        Element label = body.getElementById("userName-label");
-        System.out.println(searchInputElementInSubtree("UserName :", label));
+        String linkHtml = "https://demoqa.com/select-menu";
+//        String linkHtml = "https://form.jotform.com/233591551157458?fbclid=IwAR1ggczzG7OoN6Dgb2SDWtNyznCAAJNW-G8-_3gnejJwPFunwwBuN_NCvh0";
+        String htmlContent = Process.getHtmlContent(linkHtml);
+        Document document = Process.getDomTree(htmlContent);
+//        List<String> input = new ArrayList<>();
+//        input.add("departing");
+//        input.add("Destination");
+//        input.add("airline");
+//        input.add("Fare");
+//        input.add("country in address");
+//        input.add("month");
+//        input.add("day");
+//        input.add("year");
+//        Map<String, String> res = detectSelectElement(input, document);
+        Element e = document.getElementsContainingOwnText("Standard multi select").get(0);
+        Element res = searchSelectElementInSubtree("Standard multi select", e);
+        System.out.println(res);
+        System.out.println(Process.getXpath(res));
     }
 }

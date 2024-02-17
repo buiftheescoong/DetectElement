@@ -9,7 +9,7 @@ public class ClickElement {
     static Map<String, List<Element>> textAndElement = new HashMap<>();
     static List<String> listText = new ArrayList<>();
 
-    public static void getAllText(Element e) {
+    public static void getAllTextForClick(Element e) {
         if (e == null || (HandleElement.isInteractableElement(e) && !HandleElement.isDefaultClickableElement(e))) {
             return;
         }
@@ -83,14 +83,14 @@ public class ClickElement {
             }
         }
         for (Element child : e.children()) {
-            getAllText(child);
+            getAllTextForClick(child);
         }
     }
 
 
     public static Map<String, String> detectClickElement(List<String> input, Document document) {
         Element body = document.body();
-        getAllText(body);
+        getAllTextForClick(body);
         List<Weight> listWeight = new ArrayList<>();
         for (String s : input) {
             for (String text : listText) {

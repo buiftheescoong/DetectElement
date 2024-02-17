@@ -161,7 +161,7 @@ public class Weight implements Comparable<Weight> {
                     }
 
                 } else {
-                    Element elem = HandleElement.searchInputElementInSubtree(text, e);
+                    Element elem = HandleElement.searchSelectElementInSubtree(text, e);
                     if (elem != null) {
                         res = calculateWeight(elem);
                         per = calculatePercent(elem);
@@ -191,12 +191,38 @@ public class Weight implements Comparable<Weight> {
                     }
 
                 } else {
-                    res = calculateWeight(e);
-                    per = calculatePercent(e);
-                    tmp = e;
+                    if (!HandleElement.isInteractableElement(e)) {
+                        res = calculateWeight(e);
+                        per = calculatePercent(e);
+                        tmp = e;
+                    }
                 }
             }
         }
+        if (type.equals("select")) {
+                if (HandleElement.isLabelHasForAttr(e)) {
+                    String id = e.attr("for");
+                    Elements elements = doc.select("#"+ id);
+                    if (elements.isEmpty()) {
+                        res = 0;
+                    } else {
+                        Element elementAssociatedWithLabel = elements.get(0);
+                        if (HandleElement.isSelectElement(elementAssociatedWithLabel)) {
+                            res = calculateWeight(elementAssociatedWithLabel);
+                            per = calculatePercent(elementAssociatedWithLabel);
+                            tmp = elementAssociatedWithLabel;
+                        }
+                    }
+
+                } else {
+                    Element ele = HandleElement.searchSelectElementInSubtree(text, e);
+                    res = calculateWeight(ele);
+                    per = calculatePercent(ele);
+                    tmp = ele;
+                }
+
+        }
+
         Integer object_res = res;
         Double object_per = per;
         return new Pair<>(new Pair<>(object_res, object_per), tmp);

@@ -30,11 +30,31 @@ public class SelectVer2 {
     }
 
     public static String getTextForSelectElementInSubtree(Element e) {
-//        Elements elements = HandleElement.selectInteractableElementsInSubtree(e);
-//        if (elements.size() > 1) {
-//            return "";
-//        }
-        return "";
+        Elements elements = HandleElement.selectInteractableElementsInSubtree(e);
+        if (elements.size() > 1) {
+            return "";
+        }
+        Elements elems = e.select("*");
+        String text = e.selectFirst("select").text();
+        int cnt = 0;
+        String tmp = "";
+        for (Element ele : elems) {
+            String tag = ele.tagName();
+            if (!tag.equals("select") && !tag.equals("option")) {
+                String t = ele.ownText();
+                if (!t.isEmpty()) {
+                    cnt++;
+                    tmp = t;
+                    if (cnt > 1 || text.contains(t)) {
+                        return "";
+                    }
+                }
+            }
+        }
+        if (cnt == 1) {
+            return tmp;
+        }
+        return getTextForSelectElementInSubtree(e.parent());
     }
 
     public static Elements getSelectElements(Document document) {
@@ -81,18 +101,21 @@ public class SelectVer2 {
     }
 
     public static void main(String[] args) {
-        String linkHtml = "https://form.jotform.com/233591551157458?fbclid=IwAR1ggczzG7OoN6Dgb2SDWtNyznCAAJNW-G8-_3gnejJwPFunwwBuN_NCvh0";
+        String linkHtml = "https://demoqa.com/select-menu";
+//        String linkHtml = "https://form.jotform.com/233591551157458?fbclid=IwAR1ggczzG7OoN6Dgb2SDWtNyznCAAJNW-G8-_3gnejJwPFunwwBuN_NCvh0";
         String htmlContent = Process.getHtmlContent(linkHtml);
         Document document = Process.getDomTree(htmlContent);
-        List<String> input = new ArrayList<>();
-        input.add("departing");
-        input.add("Destination");
-        input.add("airline");
-        input.add("Fare");
-        input.add("country in address");
-        input.add("month");
-        input.add("day");
-        input.add("year");
-        Map<String, String> res = detectSelectElement(input, document);
+//        List<String> input = new ArrayList<>();
+//        input.add("departing");
+//        input.add("Destination");
+//        input.add("airline");
+//        input.add("Fare");
+//        input.add("country in address");
+//        input.add("month");
+//        input.add("day");
+//        input.add("year");
+//        Map<String, String> res = detectSelectElement(input, document);
+        Element e = document.getElementById("cars");
+        System.out.printf(getText(e, document));
     }
 }
