@@ -71,9 +71,6 @@ public class Weight implements Comparable<Weight> {
         if (e == null || e.attributes().size() == 0) {
             return 0;
         }
-//        List<String> wordsInSource = HandleString.separateWordsInString(source);
-//        HandleString.lowercaseWordsInList(wordsInSource);
-//        List<String> distinctWordsInSource = HandleString.distinctWordsInString(wordsInSource);
         Attributes attributes = e.attributes();
         if (e.attributesSize() > 0) {
             for (Attribute attr : attributes) {
@@ -82,17 +79,6 @@ public class Weight implements Comparable<Weight> {
                     String valueOfAttr = attr.getValue();
                     if (!valueOfAttr.isEmpty()) {
                         res += Calculator.weightBetweenTwoString(source, valueOfAttr);
-//                        List<String> wordsInValue = HandleString.separateWordsInString(valueOfAttr);
-//                        HandleString.lowercaseWordsInList(wordsInValue);
-//                        String tmp = "";
-//                        for (int i = 0; i < wordsInValue.size(); i++) {
-//
-//                            int idx= HandleString.calculateWeightOfAttributeAndTextWords(i, distinctWordsInSource, tmp, wordsInValue);
-//                            if (idx != -1) {
-//                                i = idx;
-//                                res += 1;
-//                            }
-//                        }
                     }
                 }
             }
@@ -116,16 +102,6 @@ public class Weight implements Comparable<Weight> {
                 if (!Setting.EXCEPT_ATTRS.contains(typeAttr)) {
                     String valueOfAttr = attr.getValue();
                     if (!valueOfAttr.isEmpty()) {
-//                        List<String> wordsInValue = HandleString.separateWordsInString(valueOfAttr);
-//                        HandleString.lowercaseWordsInList(wordsInValue);
-//                        String tmp = "";
-//                        for (int i = 0; i < wordsInValue.size(); i++) {
-//
-//                            int idx= HandleString.calculateWeightOfAttributeAndTextWords(i, wordsInSource, tmp, wordsInValue, visitedWord);
-//                            if (idx != -1) {
-//                                i = idx;
-//                            }
-//                        }
                         Calculator.calculatePercentBetweenTwoStrings(source, valueOfAttr, visitedWord);
                     }
                 }

@@ -130,6 +130,77 @@ public class HandleElement {
         String tag = e.tagName();
         return list.contains(tag);
     }
+
+    public static Element searchRadioButtonInSubtree(Element e, String choice) {
+        Elements elems = selectInteractableElementsInSubtree(e);
+        if (elems.size() == 0) {
+            return searchRadioButtonInSubtree(e.parent()
+            , choice);
+        }
+        for (Element elem : elems) {
+            if (!isRadioElement(elem)) {
+                return null;
+            }
+        }
+        for (Element elem :elems) {
+            String t = getTextForRadioButton(elem);
+            if (t.equals(choice)) {
+                return elem;
+            }
+        }
+
+        return null;
+    }
+
+    public static String getTextForRadioButtonElementInSubtree(Element e) {
+        Elements elems = e.select("*");
+        int cnt_radio = 0;
+        int cnt_text = 0;
+        String tmp = "";
+        for (Element elem : elems) {
+            if (isInteractableElement(elem) && !isRadioElement(e)) {
+                return "";
+            }
+            if (isRadioElement(e)) {
+                cnt_radio++;
+            }
+            String t = elem.ownText();
+            if (!t.isEmpty()) {
+                cnt_text++;
+                tmp = t;
+            }
+        }
+
+        if (cnt_radio == 1 && cnt_text == 0) {
+            return getTextForRadioButtonElementInSubtree(e.parent());
+        }
+        if (cnt_radio == 1 && cnt_text == 1) {
+            return tmp;
+        }
+        return "";
+    }
+
+    public static String getAssociatedLabel(String id, Element e) {
+        String query = "label[for='" + id + "']";
+        Elements label = e.ownerDocument().select(query);
+        if (label.isEmpty()) {
+            return "";
+        } else {
+            return label.get(0).ownText();
+        }
+    }
+
+    public static String getTextForRadioButton(Element e) {
+        if (e.hasAttr("id") && !e.attr("id").isEmpty()) {
+            String text = getAssociatedLabel(e.attr("id"), e);
+            if (!text.isEmpty()) {
+                return text;
+            }
+        }
+        String res = getTextForRadioButtonElementInSubtree(e);
+        return res;
+    }
+
     public static Elements selectInteractableElementsInSubtree(Element e) {
         Elements res = new Elements();
         Elements textarea_tag = e.getElementsByTag("textarea");
@@ -169,8 +240,9 @@ public class HandleElement {
         return false;
     }
 
+
     public static void main(String[] args) {
-        String linkHtml = "https://demoqa.com/select-menu";
+        String linkHtml = "https://form.jotform.com/233591762291461";
 //        String linkHtml = "https://form.jotform.com/233591551157458?fbclid=IwAR1ggczzG7OoN6Dgb2SDWtNyznCAAJNW-G8-_3gnejJwPFunwwBuN_NCvh0";
         String htmlContent = Process.getHtmlContent(linkHtml);
         Document document = Process.getDomTree(htmlContent);
@@ -184,9 +256,7 @@ public class HandleElement {
 //        input.add("day");
 //        input.add("year");
 //        Map<String, String> res = detectSelectElement(input, document);
-        Element e = document.getElementsContainingOwnText("Standard multi select").get(0);
-        Element res = searchSelectElementInSubtree("Standard multi select", e);
-        System.out.println(res);
-        System.out.println(Process.getXpath(res));
+        Element e = document.getElementById("label_20");
+        System.out.println(searchRadioButtonInSubtree(e, "Yes"));
     }
 }
