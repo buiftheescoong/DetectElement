@@ -34,7 +34,6 @@ public class Weight implements Comparable<Weight> {
     }
 
     public int calculateWeight(String target) {
-
         return Calculator.weightBetweenTwoString(source, target);
     }
 
@@ -137,12 +136,28 @@ public class Weight implements Comparable<Weight> {
                     }
 
                 } else {
-                    Element elem = HandleElement.searchSelectElementInSubtree(text, e);
-                    if (elem != null) {
-                        res = calculateWeight(elem);
-                        per = calculatePercent(elem);
-                        tmp = elem;
+                    if (HandleElement.isLabelHasForAttr(e.parent())) {
+                        String id = e.parent().attr("for");
+                        Elements elements = doc.select("#"+ id);
+                        if (elements.isEmpty()) {
+                            res = 0;
+                        } else {
+                            Element elementAssociatedWithLabel = elements.get(0);
+                            if (HandleElement.isInputElement(elementAssociatedWithLabel)) {
+                                res = calculateWeight(elementAssociatedWithLabel);
+                                per = calculatePercent(elementAssociatedWithLabel);
+                                tmp = elementAssociatedWithLabel;
+                            }
+                        }
+                    } else {
+                        Element elem = HandleElement.searchInputElementInSubtree(text, e);
+                        if (elem != null) {
+                            res = calculateWeight(elem);
+                            per = calculatePercent(elem);
+                            tmp = elem;
+                        }
                     }
+
                 }
             }
         }
@@ -167,17 +182,55 @@ public class Weight implements Comparable<Weight> {
                     }
 
                 } else {
-                    if (!HandleElement.isInteractableElement(e)) {
-                        res = calculateWeight(e);
-                        per = calculatePercent(e);
-                        tmp = e;
+                    Element par = e.parent();
+                    if (HandleElement.isDefaultClickableElement(par)) {
+                        res = calculateWeight(par);
+                        per = calculatePercent(par);
+                        tmp = par;
+                    } else {
+                        if (HandleElement.isLabelHasForAttr(par)) {
+                            String id = par.attr("for");
+                            Elements elements = doc.select("#"+ id);
+                            if (elements.isEmpty()) {
+                                res = 0;
+                            } else {
+                                Element elementAssociatedWithLabel = elements.get(0);
+                                if (HandleElement.isDefaultClickableElement(elementAssociatedWithLabel)) {
+                                    res = calculateWeight(elementAssociatedWithLabel);
+                                    per = calculatePercent(elementAssociatedWithLabel);
+                                    tmp = elementAssociatedWithLabel;
+                                }
+                            }
+                        } else {
+                            if (!HandleElement.isInteractableElement(e)) {
+                                res = calculateWeight(e);
+                                per = calculatePercent(e);
+                                tmp = e;
+                            }
+                        }
                     }
+
                 }
             }
         }
         if (type.equals("select")) {
-                if (HandleElement.isLabelHasForAttr(e)) {
-                    String id = e.attr("for");
+            if (HandleElement.isLabelHasForAttr(e)) {
+                String id = e.attr("for");
+                Elements elements = doc.select("#"+ id);
+                if (elements.isEmpty()) {
+                    res = 0;
+                } else {
+                    Element elementAssociatedWithLabel = elements.get(0);
+                    if (HandleElement.isSelectElement(elementAssociatedWithLabel)) {
+                        res = calculateWeight(elementAssociatedWithLabel);
+                        per = calculatePercent(elementAssociatedWithLabel);
+                        tmp = elementAssociatedWithLabel;
+                    }
+                }
+
+            } else {
+                if (HandleElement.isLabelHasForAttr(e.parent())) {
+                    String id = e.parent().attr("for");
                     Elements elements = doc.select("#"+ id);
                     if (elements.isEmpty()) {
                         res = 0;
@@ -189,14 +242,13 @@ public class Weight implements Comparable<Weight> {
                             tmp = elementAssociatedWithLabel;
                         }
                     }
-
                 } else {
                     Element ele = HandleElement.searchSelectElementInSubtree(text, e);
                     res = calculateWeight(ele);
                     per = calculatePercent(ele);
                     tmp = ele;
                 }
-
+            }
         }
 
         Integer object_res = res;
@@ -208,26 +260,26 @@ public class Weight implements Comparable<Weight> {
         double max_per = -1;
         Element tmp_result = null;
         for (Element e : elementOfText) {
-             Pair<Pair<Integer, Double>, Element> p = calculateWeightWithElementOfText(e);
-             Pair<Integer, Double> first = p.getFirst();
-             Integer res = first.getFirst();
-             Double per = first.getSecond();
-             Element second = p.getSecond();
-             if (second == null) {
-                 continue;
-             }
-             if (per > max_per) {
-                 max_per = per;
-                 max_res = res;
-                 tmp_result = second;
-             } else {
-                 if (per == max_per) {
-                     if (res > max_res) {
-                         max_res = res;
-                         tmp_result = second;
-                     }
-                 }
-             }
+            Pair<Pair<Integer, Double>, Element> p = calculateWeightWithElementOfText(e);
+            Pair<Integer, Double> first = p.getFirst();
+            Integer res = first.getFirst();
+            Double per = first.getSecond();
+            Element second = p.getSecond();
+            if (second == null) {
+                continue;
+            }
+            if (per > max_per) {
+                max_per = per;
+                max_res = res;
+                tmp_result = second;
+            } else {
+                if (per == max_per) {
+                    if (res > max_res) {
+                        max_res = res;
+                        tmp_result = second;
+                    }
+                }
+            }
 
         }
         result = tmp_result;
@@ -263,5 +315,4 @@ public class Weight implements Comparable<Weight> {
             }
         }
     }
-
 }

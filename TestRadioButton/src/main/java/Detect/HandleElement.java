@@ -5,7 +5,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HandleElement {
 
@@ -152,6 +154,37 @@ public class HandleElement {
         return null;
     }
 
+    public static Map<String, Element> searchCheckboxInSubtree(Element e, List<String> choices) {
+        Elements elems = selectInteractableElementsInSubtree(e);
+        if (elems.size() == 0) {
+            return searchCheckboxInSubtree(e.parent()
+                    , choices);
+        }
+        for (Element elem : elems) {
+            if (!isCheckboxElement(elem)) {
+                System.out.println(elem);
+                System.out.println(1);
+                return null;
+            }
+        }
+        Map<String, Element> res = new HashMap<>();
+        int cnt = 0;
+        for (Element elem :elems) {
+            String t = getTextForCheckbox(elem);
+
+            if (choices.contains(t)) {
+                if (!res.containsKey(t)) {
+                    res.put(t, elem);
+                    cnt++;
+                }
+            }
+        }
+        if (cnt == choices.size()) {
+            return res;
+        }
+        System.out.println(2);
+        return null;
+    }
     public static String getTextForRadioButtonElementInSubtree(Element e) {
         Elements elems = e.select("*");
         int cnt_radio = 0;
@@ -180,14 +213,53 @@ public class HandleElement {
         return "";
     }
 
+    public static String getTextForCheckboxElementInSubtree(Element e) {
+        Elements elems = e.select("*");
+        int cnt_checkbox = 0;
+        int cnt_text = 0;
+        String tmp = "";
+        for (Element elem : elems) {
+            if (isInteractableElement(elem) && !isCheckboxElement(e)) {
+                return "";
+            }
+            if (isCheckboxElement(e)) {
+                cnt_checkbox++;
+            }
+            String t = elem.ownText();
+            if (!t.isEmpty()) {
+                cnt_text++;
+                tmp = t;
+            }
+        }
+
+        if (cnt_checkbox == 1 && cnt_text == 0) {
+            return getTextForCheckboxElementInSubtree(e.parent());
+        }
+        if (cnt_checkbox == 1 && cnt_text == 1) {
+            return tmp;
+        }
+        return "";
+    }
+
     public static String getAssociatedLabel(String id, Element e) {
         String query = "label[for='" + id + "']";
         Elements label = e.ownerDocument().select(query);
         if (label.isEmpty()) {
             return "";
         } else {
-            return label.get(0).ownText();
+            return label.get(0).text();
         }
+    }
+
+    public static String getTextForCheckbox(Element e) {
+        if (e.hasAttr("id") && !e.attr("id").isEmpty()) {
+            String text = getAssociatedLabel(e.attr("id"), e);
+            if (!text.isEmpty()) {
+                return text;
+            }
+        }
+        String res = getTextForCheckboxElementInSubtree(e);
+        return res;
     }
 
     public static String getTextForRadioButton(Element e) {
@@ -256,7 +328,8 @@ public class HandleElement {
 //        input.add("day");
 //        input.add("year");
 //        Map<String, String> res = detectSelectElement(input, document);
-        Element e = document.getElementById("label_20");
-        System.out.println(searchRadioButtonInSubtree(e, "Yes"));
+        Element e = document.getElementById("label_5");
+        System.out.println(searchCheckboxInSubtree(e, Arrays.asList("Cancer", "Other")));
+
     }
 }
